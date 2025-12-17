@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Saved Resumes</title>
+<style>
+body { font-family: Arial; background:#f3f4f6; padding:20px; }
+h2 { text-align:center; }
+table { width:100%; border-collapse:collapse; background:white; border-radius:10px; overflow:hidden; }
+th, td { padding:12px; border-bottom:1px solid #ddd; }
+th { background:#10b981; color:white; }
+.view-btn {
+    background:#3b82f6; padding:6px 12px;
+    border-radius:6px; color:white; text-decoration:none; font-weight:bold;
+}
+</style>
+</head>
+<body>
+
+<h2>Saved / Downloaded Resumes</h2>
+
+<table>
+<thead>
+<tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Skills</th>
+    <th>Open Resume</th>
+</tr>
+</thead>
+<tbody id="savedBody"></tbody>
+</table>
+
+<script>
+function loadSavedResumes() {
+    let saved = JSON.parse(localStorage.getItem("downloadedResumes") || "[]");
+    let tbody = document.getElementById("savedBody");
+
+    if (saved.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No resumes downloaded yet</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = saved.map(a => `
+        <tr>
+            <td>${a.name}</td>
+            <td>${a.email}</td>
+            <td>${a.skills}</td>
+            <td><a class="view-btn" href="${a.resume}" target="_blank">Open</a></td>
+        </tr>
+    `).join("");
+}
+
+loadSavedResumes();
+</script>
+
+</body>
+</html>

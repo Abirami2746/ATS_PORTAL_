@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATS Portal</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+    }
+
+    .container {
+        text-align: center;
+        width: 90%;
+        max-width: 380px;
+        padding: 40px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(12px);
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    h1 {
+        color: #fff;
+        font-size: 32px;
+        margin-bottom: 20px;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    h2 {
+        color: #fff;
+        font-size: 22px;
+        margin-bottom: 25px;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 14px;
+        margin-top: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        color: #fff;
+        transition: 0.3s;
+    }
+
+    .btn-seeker {
+        background: #28a745;
+    }
+    .btn-seeker:hover {
+        background: #218838;
+        transform: scale(1.05);
+    }
+
+    .btn-recruiter {
+        background: #007bff;
+    }
+    .btn-recruiter:hover {
+        background: #0069d9;
+        transform: scale(1.05);
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 400px) {
+        .container {
+            padding: 30px 20px;
+        }
+        h1 { font-size: 28px; }
+        h2 { font-size: 20px; }
+        .btn { font-size: 15px; padding: 12px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>ATS Portal</h1>
+    <h2>Select User Type</h2>
+
+    <a href="log.html">
+        <button class="btn btn-seeker">Job Applicant</button>
+    </a>
+
+    <a href="recruiterLogin.html">
+        <button class="btn btn-recruiter">Recruiter</button>
+    </a>
+</div>
+
+</body>
+</html>

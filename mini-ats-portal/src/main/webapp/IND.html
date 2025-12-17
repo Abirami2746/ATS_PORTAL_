@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ATS Dashboard — Seeker</title>
+<style>
+  :root{
+    --bg1:#eef2ff; --card:#ffffff; --accent:#5b6cff; --accent-2:#28a745;
+    --muted:#6b7280; --glass: rgba(255,255,255,0.6);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    background: linear-gradient(135deg,var(--bg1),#e7f6ff); min-height:100vh; color:#0f172a;
+  }
+  .wrap{max-width:1200px;margin:28px auto;padding:20px;display:grid;grid-template-columns:300px 1fr 320px;gap:18px}
+  .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 8px 30px rgba(16,24,40,0.06)}
+  header.card{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#2dd4bf);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+  h1{font-size:18px;margin:0}
+  .actions button{margin-left:8px;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+  button.primary{background:var(--accent);color:#fff}
+  button.ghost{background:transparent;border:1px solid #e6eefc}
+  /* Left column */
+  .profile{display:flex;flex-direction:column;gap:12px;align-items:center}
+  .avatar{width:110px;height:110px;border-radius:14px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-weight:700;color:#475569;overflow:hidden}
+  .small{font-size:13px;color:var(--muted)}
+  .ats{width:100%;text-align:center;padding:12px;border-radius:10px;background:linear-gradient(90deg,#fff,#fbfbff);box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
+  .ats .score{font-size:28px;font-weight:700;color:var(--accent)}
+  .past-scores{display:flex;gap:8px;justify-content:center;margin-top:8px}
+  .past-scores span{font-size:12px;color:var(--muted);background:#f8fafc;padding:6px 8px;border-radius:8px}
+  .left-actions button{width:100%;padding:10px;border-radius:10px;border:none;cursor:pointer;margin-top:8px}
+  .upload-file{display:none}
+  /* Middle column */
+  .jobs-list .job{display:flex;justify-content:space-between;gap:12px;padding:12px;border-radius:10px;border:1px solid #eef2ff}
+  .job .meta{max-width:60%}
+  .job h3{margin:0;font-size:15px}
+  .job .small{font-size:12px;color:var(--muted)}
+  .job .skills{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+  .chip{background:#f1f5f9;padding:6px 8px;border-radius:8px;font-size:12px;color:#334155}
+  .job-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  .job-actions .row{display:flex;gap:8px}
+  /* Right column */
+  .tools .tool{margin-bottom:12px}
+  .compare-list{max-height:240px;overflow:auto}
+  .applied-list li,.saved-list li{margin-bottom:6px;font-size:14px}
+  /* Modal */
+  .modal-back{position:fixed;inset:0;background:rgba(2,6,23,0.4);display:flex;align-items:center;justify-content:center;padding:16px}
+  .modal{width:900px;max-width:100%;background:var(--card);border-radius:12px;padding:18px;box-shadow:0 20px 40px rgba(2,6,23,0.2)}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .timeline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .step{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px}
+  .dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .dot.inactive{background:#eef2ff;color:#6b7280}
+  .dot.active{background:var(--accent-2);color:#fff}
+  /* chatbot */
+  .chat{height:320px;border-radius:10px;border:1px solid #eef2ff;padding:10px;display:flex;flex-direction:column}
+  .messages{flex:1;overflow:auto;padding:6px}
+  .msg{padding:8px;border-radius:8px;max-width:75%}
+  .msg.bot{background:#f8fafc;color:#0f172a}
+  .msg.user{background:var(--accent);color:#fff;margin-left:auto}
+  .chat input{padding:8px;border-radius:8px;border:1px solid #e6eefc}
+  /* responsive */
+  @media (max-width:980px){.wrap{grid-template-columns:1fr; padding:12px} header.card{flex-direction:column;align-items:flex-start} .actions{margin-top:8px}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <header class="card">
+      <div class="brand">
+        <div class="logo">ATS</div>
+        <div>
+          <h1>Applicant Tracking System — Dashboard</h1>
+          <div class="small"> Personalized job matches & ATS transparency </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="ghost" id="helpBtn">Help</button>
+        <button class="primary" id="logoutBtn">Logout</button>
+      </div>
+    </header>
+
+    <!-- Left column -->
+    <aside class="card">
+      <div class="profile">
+        <div class="avatar" id="avatar">VB</div>
+        <input type="file" id="photoInput" accept="image/*" style="display:none" />
+        <button class="ghost" id="changePhoto">Change Photo</button>
+
+        <div style="width:100%">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700" id="userName">Venkatesh B</div>
+              <div class="small" id="userEmail">venkatesh@example.com</div>
+            </div>
+            <button class="ghost" id="editProfile">Edit</button>
+          </div>
+        </div>
+
+        <div class="ats">
+          <div class="small">ATS Score</div>
+          <div class="score" style="display:flex;align-items:center;justify-content:center;gap:12px">
+            <div class="score-number" id="atsScore">78%</div>
+          </div>
+          <div class="past-scores" id="pastScores">
+            <!-- filled by JS -->
+          </div>
+        </div>
+
+        <div style="width:100%" class="left-actions">
+          <label for="resumeUpload" class="ghost" style="display:block;text-align:center;cursor:pointer">Upload Resume</label>
+          <input id="resumeUpload" type="file" class="upload-file" />
+          <button class="primary" id="openChat">Chatbot</button>
+          <button class="ghost" id="viewApplied">View Applied Jobs</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Middle column -->
+    <main class="card" style="overflow:auto">
+      <section style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h2 style="margin:0">Recommended Jobs</h2>
+          <div class="small">Use Analyze for job-match %, missing skills & suggested courses</div>
+        </div>
+        <div>
+          <button class="ghost" id="viewSaved">Saved (<span id="savedCount">0</span>)</button>
+          <button class="primary" id="openCompareBtn">Compare Jobs</button>
+        </div>
+      </section>
+
+      <div style="margin-top:14px" class="jobs-list" id="jobsList">
+        <!-- jobs inserted by JS -->
+      </div>
+
+      <section style="margin-top:18px">
+        <h3 style="margin:0 0 8px 0">Quick Insights</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:220px" class="card">
+            <div style="font-weight:700">Keyword Suggestions</div>
+            <div class="small" id="keywordHints">Select a job and click Analyze</div>
+          </div>
+          <div style="flex:1;min-width:220px" class="card">
+            <div style="font-weight:700">Missing Skills / Suggested Courses</div>
+            <div class="small" id="suggestedCourses">Select job → Analyze</div>
+          </div>
+          <div style="width:220px" class="card">
+            <div style="font-weight:700">Saved Jobs</div>
+            <ul id="savedList" class="saved-list"></ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Right column -->
+    <aside class="card tools">
+      <div class="tool">
+        <h3 style="margin:0 0 8px 0">Skill Gap Analyzer</h3>
+        <div class="small">Type your skills (comma separated) and then Analyze a job.</div>
+        <input id="userSkills" placeholder="e.g., React, SQL, Python" style="width:100%;padding:8px;border-radius:8px;border:1px solid #eef2ff;margin-top:8px" />
+        <button class="primary" id="saveSkills" style="width:100%;margin-top:8px">Save Skills</button>
+      </div>
+
+      <div class="tool">
+        <h3 style="margin:0 0 8px 0">Job Comparison</h3>
+        <div class="small">Select up to 3 jobs via Compare button on each job card.</div>
+        <div class="compare-list" id="compareList"></div>
+        <button class="primary" id="runCompare" style="width:100%;margin-top:8px">Compare Selected</button>
+      </div>
+
+      <div class="tool">
+        <h3 style="margin:0 0 8px 0">Application Timeline</h3>
+        <div class="small">Visual tracking for your applications.</div>
+        <div style="margin-top:8px;">
+          <ul id="appliedList" class="applied-list"></ul>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Modals -->
+  <div id="compareModal" style="display:none" class="modal-back" aria-hidden>
+    <div class="modal">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3>Job Comparison</h3>
+        <div><button id="closeCompare" class="ghost">Close</button></div>
+      </div>
+      <div style="margin-top:12px" id="compareContent" class="grid-2"></div>
+    </div>
+  </div>
+
+  <div id="chatModal" style="display:none" class="modal-back" aria-hidden>
+    <div class="modal" style="max-width:480px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3>Chatbot</h3>
+        <button class="ghost" id="closeChat">Close</button>
+      </div>
+      <div class="chat" style="margin-top:12px">
+        <div class="messages" id="messages"></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input id="chatInput" placeholder="Ask resume tips, jobs, courses..." />
+          <button class="primary" id="sendChat">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* -------------------------
+  Mock data & storage helpers
+---------------------------*/
+const sampleJobs = [
+  { id:1, title:"Frontend Developer", company:"Acme Corp", salary:"₹8,00,000", location:"Bengaluru", mode:"Remote", skills:["React","CSS","JS"], rating:4.3, status:"Applied" },
+  { id:2, title:"Backend Engineer", company:"ByteWorks", salary:"₹10,00,000", location:"Hyderabad", mode:"Hybrid", skills:["Java","SQL"], rating:4.6, status:"Viewed" },
+  { id:3, title:"Data Analyst", company:"DataSense", salary:"₹6,50,000", location:"Remote", mode:"Remote", skills:["Python","SQL","Pandas"], rating:4.1, status:"Shortlisted" },
+  { id:4, title:"Fullstack Engineer", company:"Orbit Labs", salary:"₹12,00,000", location:"Mumbai", mode:"Onsite", skills:["Node","React","SQL"], rating:4.5, status:"Applied" },
+  { id:5, title:"ML Intern", company:"Neura", salary:"₹5,00,000", location:"Remote", mode:"Remote", skills:["Python","TensorFlow","Pandas"], rating:4.0, status:"Viewed" }
+];
+
+function lsGet(key, fallback){ try{ return JSON.parse(localStorage.getItem(key)) ?? fallback }catch(e){return fallback}}
+function lsSet(key,val){ localStorage.setItem(key,JSON.stringify(val)) }
+
+/* -------------------------
+  App state
+---------------------------*/
+let jobs = sampleJobs;
+let saved = lsGet('savedJobs', []);
+let applied = lsGet('appliedJobs', []); // store job ids + status
+let compareSelected = lsGet('compareSelected', []);
+let userSkills = lsGet('userSkills', ["React","JS","SQL"]);
+let pastScores = lsGet('pastScores', [65,72,78]);
+let atsScore = lsGet('atsScore', 78);
+
+/* -------------------------
+  Populate UI
+---------------------------*/
+const jobsListEl = document.getElementById('jobsList');
+const savedCountEl = document.getElementById('savedCount');
+const savedListEl = document.getElementById('savedList');
+const appliedListEl = document.getElementById('appliedList');
+const compareListEl = document.getElementById('compareList');
+const compareModal = document.getElementById('compareModal');
+const compareContent = document.getElementById('compareContent');
+const compareModalClose = document.getElementById('closeCompare');
+
+function renderJobs(){
+  jobsListEl.innerHTML = '';
+  for(const job of jobs){
+    const div = document.createElement('div'); div.className='job'; div.style.marginTop='10px';
+    div.innerHTML = `
+      <div class="meta">
+        <h3>${job.title} <span style="font-weight:500;color:#475569">@ ${job.company}</span></h3>
+        <div class="small">${job.location} • ${job.mode} • ${job.salary} • ⭐ ${job.rating}</div>
+        <div class="skills" style="margin-top:8px">${job.skills.map(s=>`<span class="chip">${s}</span>`).join('')}</div>
+      </div>
+      <div class="job-actions">
+        <div class="row">
+          <button class="primary" data-action="apply" data-id="${job.id}">Apply</button>
+          <button class="ghost" data-action="save" data-id="${job.id}">${saved.includes(job.id)?'Saved':'Save'}</button>
+        </div>
+        <div class="row">
+          <button class="ghost" data-action="compare" data-id="${job.id}">${compareSelected.includes(job.id)?'Selected':'Compare'}</button>
+          <button class="ghost" data-action="analyze" data-id="${job.id}">Analyze</button>
+        </div>
+      </div>
+    `;
+    jobsListEl.appendChild(div);
+  }
+  savedCountEl.textContent = saved.length;
+  renderSaved();
+  renderAppliedList();
+  renderCompareList();
+}
+
+function renderSaved(){
+  savedListEl.innerHTML = '';
+  if(saved.length===0){ savedListEl.innerHTML = '<li style="color:#94a3b8">No saved jobs</li>'; return;}
+  for(const id of saved){
+    const j = jobs.find(x=>x.id===id);
+    const li = document.createElement('li'); li.textContent = `${j.title} @ ${j.company}`;
+    savedListEl.appendChild(li);
+  }
+}
+function renderAppliedList(){
+  appliedListEl.innerHTML = '';
+  if(applied.length===0){ appliedListEl.innerHTML = '<li style="color:#94a3b8">No applied jobs</li>'; return;}
+  for(const a of applied){
+    const j = jobs.find(x=>x.id===a.id);
+    const li = document.createElement('li'); li.innerHTML = `<strong>${j.title}</strong> — <span style="color:#6b7280">${a.status}</span>`;
+    appliedListEl.appendChild(li);
+  }
+}
+function renderCompareList(){
+  compareListEl.innerHTML = '';
+  if(compareSelected.length===0){ compareListEl.innerHTML = '<div style="color:#94a3b8">No jobs selected</div>'; return;}
+  for(const id of compareSelected){
+    const j = jobs.find(x=>x.id===id);
+    const box = document.createElement('div'); box.style.padding='8px'; box.style.border='1px solid #eef2ff'; box.style.marginBottom='8px';
+    box.innerHTML = `<div style="display:flex;justify-content:space-between"><div><strong>${j.title}</strong><div class="small">${j.company}</div></div><button class="ghost" data-action="remove-compare" data-id="${j.id}">Remove</button></div>`;
+    compareListEl.appendChild(box);
+  }
+}
+
+/* -------------------------
+  Events delegation for job actions
+---------------------------*/
+jobsListEl.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  const action = btn.dataset.action;
+  const id = Number(btn.dataset.id);
+  if(action==='save'){ toggleSave(id); }
+  if(action==='apply'){ applyJob(id); }
+  if(action==='compare'){ toggleCompare(id); }
+  if(action==='analyze'){ analyzeJob(id); }
+});
+
+function toggleSave(id){
+  if(saved.includes(id)){ saved = saved.filter(x=>x!==id) }
+  else saved.push(id);
+  lsSet('savedJobs', saved); renderJobs();
+}
+function applyJob(id){
+  if(!applied.find(a=>a.id===id)){
+    applied.push({id,status:'Applied'});
+    lsSet('appliedJobs', applied);
+    alert('Application submitted — status: Applied');
+    renderJobs();
+  } else {
+    alert('Already applied');
+  }
+  renderAppliedList();
+}
+function toggleCompare(id){
+  if(compareSelected.includes(id)){ compareSelected = compareSelected.filter(x=>x!==id) }
+  else {
+    if(compareSelected.length>=3){ alert('You can compare up to 3 jobs'); return; }
+    compareSelected.push(id);
+  }
+  lsSet('compareSelected', compareSelected);
+  renderJobs();
+}
+
+/* -------------------------
+  Analyze & Skill-gap
+---------------------------*/
+function analyzeJob(id){
+  const job = jobs.find(j=>j.id===id);
+  const user = userSkills.map(s=>s.trim().toLowerCase()).filter(Boolean);
+  const missing = job.skills.filter(s=>!user.includes(s.toLowerCase()));
+  const matchPercent = Math.max(30, Math.round(100 - (missing.length/job.skills.length)*100));
+  // show results:
+  document.getElementById('keywordHints').textContent = job.skills.join(', ');
+  document.getElementById('suggestedCourses').innerHTML = `<div style="font-weight:700">${matchPercent}% match</div>
+    <div class="small">Missing: ${missing.length? missing.join(', '): 'None'}</div>
+    <div style="margin-top:6px" class="small">Suggested courses:</div>
+    <ul class="small">${missing.map(m=>`<li>${m} — Course: Intro to ${m} (example)</li>`).join('')}</ul>`;
+  alert(`Analysis for ${job.title}: Match ${matchPercent}% — Missing: ${missing.join(', ') || 'None'}`);
+}
+
+/* -------------------------
+  Compare modal
+---------------------------*/
+document.getElementById('openCompareBtn').addEventListener('click', ()=>{ if(compareSelected.length<2) return alert('Select 2–3 jobs to compare'); openCompareModal() })
+document.getElementById('runCompare').addEventListener('click', ()=>{ if(compareSelected.length<2) return alert('Select 2–3 jobs'); openCompareModal() })
+compareModalClose.addEventListener('click', ()=>compareModal.style.display='none');
+
+function openCompareModal(){
+  compareContent.innerHTML = '';
+  const selectedJobs = compareSelected.map(id=>jobs.find(j=>j.id===id));
+  // build two-column comparison layout (we'll use a simple stacked view)
+  const left = document.createElement('div');
+  const right = document.createElement('div');
+  left.innerHTML = `<div style="font-weight:700">Attribute</div>
+    <div style="margin-top:8px">Salary</div><div>Location</div><div>Work mode</div><div>Skills</div><div>Company rating</div>`;
+  right.innerHTML = selectedJobs.map(j=>`<div style="font-weight:700">${j.title}</div>
+    <div style="margin-top:8px">${j.salary}</div><div>${j.location}</div><div>${j.mode}</div><div>${j.skills.join(', ')}</div><div>${j.rating}</div>`).join('<hr style="margin:12px 0">');
+  compareContent.appendChild(left);
+  compareContent.appendChild(right);
+  compareModal.style.display = 'flex';
+}
+
+/* -------------------------
+  Application timeline rendering
+---------------------------*/
+function renderApplicationTimelines(){
+  // We'll create an element for each applied job showing the status timeline
+  const container = document.createElement('div');
+  for(const a of applied){
+    const job = jobs.find(j=>j.id===a.id);
+    const block = document.createElement('div'); block.style.marginBottom='12px';
+    block.innerHTML = `<div style="font-weight:700">${job.title} @ ${job.company}</div>`;
+    // timeline steps
+    const steps = ["Applied","Viewed","Shortlisted","Interview Scheduled","Offer/Rejected"];
+    const currentIndex = steps.indexOf(a.status) >= 0 ? steps.indexOf(a.status) : 0;
+    const t = document.createElement('div'); t.className='timeline'; t.style.marginTop='8px';
+    steps.forEach((s,idx)=>{
+      const node = document.createElement('div'); node.className='step';
+      const d = document.createElement('div'); d.className='dot ' + (idx<=currentIndex ? 'active' : 'inactive'); d.textContent = idx+1;
+      const lab = document.createElement('div'); lab.textContent = s; lab.style.maxWidth='80px'; lab.style.textAlign='center';
+      node.appendChild(d); node.appendChild(lab);
+      t.appendChild(node);
+    });
+    block.appendChild(t);
+    container.appendChild(block);
+  }
+  // replace applied list with timeline view beneath tools
+  const appliedArea = document.getElementById('appliedList');
+  appliedArea.innerHTML = '';
+  if(applied.length===0){ appliedArea.innerHTML = '<li style="color:#94a3b8">No applied jobs</li>'; return; }
+  // we will append mini items (timeline visual in modal)
+  for(const a of applied){
+    const job = jobs.find(j=>j.id===a.id);
+    const li = document.createElement('li'); li.innerHTML = `<strong>${job.title}</strong> — <span>${a.status}</span> <button class="ghost" data-action="view-timeline" data-id="${a.id}" style="margin-left:8px">View</button>`;
+    appliedArea.appendChild(li);
+  }
+}
+
+/* -------------------------
+  Chatbot (mock)
+---------------------------*/
+const chatModal = document.getElementById('chatModal');
+document.getElementById('openChat').addEventListener('click', ()=>chatModal.style.display='flex');
+document.getElementById('closeChat').addEventListener('click', ()=>chatModal.style.display='none');
+document.getElementById('sendChat').addEventListener('click', sendChatMessage);
+document.getElementById('messages').addEventListener('click', ()=>{}); // placeholder
+function sendChatMessage(){
+  const input = document.getElementById('chatInput'); const val = input.value.trim(); if(!val) return;
+  appendMsg('user', val); input.value='';
+  // very simple canned responses
+  setTimeout(()=>{
+    let resp = "Sorry, I didn't get that. Try: 'resume tips', 'suggest courses', 'job match for React'";
+    if(/resume/i.test(val)) resp = "Resume tip: Put key skills on top; include keywords from job description; keep 1-page for <5 years exp.";
+    if(/course|learn|suggest/i.test(val)) resp = "Suggested: Coursera / Udemy course: 'Intro to " + (userSkills[0] || 'Python') + "'";
+    if(/match|match%/i.test(val)) resp = "Open a job and click Analyze to see match % and missing skills.";
+    appendMsg('bot', resp);
+  },600);
+}
+function appendMsg(who, text){
+  const box = document.getElementById('messages'); const d = document.createElement('div'); d.className = 'msg ' + (who==='bot' ? 'bot' : 'user'); d.textContent = text;
+  box.appendChild(d); box.scrollTop = box.scrollHeight;
+}
+
+/* -------------------------
+  Profile, photo, skills, resume handling
+---------------------------*/
+document.getElementById('changePhoto').addEventListener('click', ()=>document.getElementById('photoInput').click());
+document.getElementById('photoInput').addEventListener('change', (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  const url = URL.createObjectURL(f);
+  document.getElementById('avatar').innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px">`;
+  lsSet('profilePhoto', url);
+});
+document.getElementById('saveSkills').addEventListener('click', ()=>{
+  const val = document.getElementById('userSkills').value;
+  userSkills = val.split(',').map(s=>s.trim()).filter(Boolean);
+  lsSet('userSkills', userSkills);
+  alert('Skills saved: ' + userSkills.join(', '));
+});
+document.getElementById('resumeUpload').addEventListener('change', (e)=>{
+  if(e.target.files.length) alert('Resume uploaded: ' + e.target.files[0].name);
+});
+document.getElementById('logoutBtn').addEventListener('click', ()=>{ alert('Logged out'); /* replace with real logout */ });
+
+/* -------------------------
+  Initialize view & bindings
+---------------------------*/
+function init(){
+  // fill user UI
+  document.getElementById('userName').textContent = lsGet('userName','Venkatesh B');
+  document.getElementById('userEmail').textContent = lsGet('userEmail','venkatesh@example.com');
+  document.getElementById('atsScore').textContent = atsScore + '%';
+  const psEl = document.getElementById('pastScores'); psEl.innerHTML = '';
+  for(const p of pastScores) { const sp = document.createElement('span'); sp.textContent = p + '%'; psEl.appendChild(sp); }
+
+  document.getElementById('userSkills').value = userSkills.join(', ');
+  renderJobs();
+  renderApplicationTimelines();
+  // bind remove-compare buttons (delegation)
+  compareListEl.addEventListener('click', (e)=>{
+    const b = e.target.closest('button'); if(!b) return;
+    if(b.dataset.action==='remove-compare'){ const id = Number(b.dataset.id); compareSelected = compareSelected.filter(x=>x!==id); lsSet('compareSelected', compareSelected); renderJobs(); }
+  });
+  // applied list view timeline
+  appliedListEl.addEventListener('click', (e)=>{
+    const b = e.target.closest('button'); if(!b) return;
+    if(b.dataset.action==='view-timeline'){ const id = Number(b.dataset.id); openTimelineModal(id); }
+  });
+}
+init();
+
+/* -------------------------
+  Timeline modal (simple)
+---------------------------*/
+function openTimelineModal(jobId){
+  const job = jobs.find(j=>j.id===jobId);
+  const a = applied.find(x=>x.id===jobId);
+  // build modal
+  const modal = document.createElement('div'); modal.className='modal-back'; modal.style.display='flex';
+  modal.innerHTML = `<div class="modal"><div style="display:flex;justify-content:space-between"><h3>${job.title} — Application Timeline</h3><button class="ghost" id="closeT">Close</button></div>
+  <div style="margin-top:12px">${renderTimelineHtml(a.status)}</div></div>`;
+  document.body.appendChild(modal);
+  document.getElementById('closeT').addEventListener('click', ()=>modal.remove());
+}
+function renderTimelineHtml(status){
+  const steps = ["Applied","Viewed","Shortlisted","Interview Scheduled","Offer/Rejected"];
+  let html = '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">';
+  const idx = steps.indexOf(status) >= 0 ? steps.indexOf(status) : 0;
+  steps.forEach((s,i)=>{
+    html += `<div style="text-align:center"><div style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700; background:${i<=idx? '#10b981':'#eef2ff'}; color:${i<=idx? '#fff':'#6b7280'}">${i+1}</div><div style="margin-top:8px;font-size:13px">${s}</div></div>`;
+  });
+  html += '</div>';
+  return html;
+}
+
+/* -------------------------
+  Help & small bindings
+---------------------------*/
+document.getElementById('helpBtn').addEventListener('click', ()=>alert('Help: Contact support@company.com or open Chatbot.'));
+document.getElementById('viewSaved').addEventListener('click', ()=>{ if(saved.length===0) alert('No saved jobs'); else alert('Saved jobs:\\n' + saved.map(id=>jobs.find(j=>j.id===id).title).join('\\n')) });
+document.getElementById('viewApplied').addEventListener('click', ()=>{ if(applied.length===0) alert('No applications yet'); else alert('Applied jobs:\\n' + applied.map(a=>jobs.find(j=>j.id===a.id).title + ' — ' + a.status).join('\\n')) });
+
+/* Keep local storage in sync when user closes */
+window.addEventListener('beforeunload', ()=>{ lsSet('savedJobs', saved); lsSet('appliedJobs', applied); lsSet('compareSelected', compareSelected); lsSet('userSkills', userSkills); lsSet('pastScores', pastScores); lsSet('atsScore', atsScore); });
+
+/* -------------------------
+  Small enhancement: auto-apply status progress simulation (demo only)
+---------------------------*/
+setInterval(()=>{
+  // randomly progress one applied job forward (demo)
+  if(applied.length>0 && Math.random() < 0.05){
+    const idx = Math.floor(Math.random()*applied.length);
+    const steps = ["Applied","Viewed","Shortlisted","Interview Scheduled","Offer/Rejected"];
+    let cur = steps.indexOf(applied[idx].status);
+    if(cur < steps.length-1){ applied[idx].status = steps[cur+1]; lsSet('appliedJobs', applied); renderApplicationTimelines(); renderAppliedList(); }
+  }
+}, 4000);
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Applicant Signup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff9966, #ff5e62);
+        }
+
+        .signup-box {
+            width: 380px;
+            padding: 45px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h2 {
+            color: #fff;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 12px;
+            border: none;
+            outline: none;
+            font-size: 15px;
+        }
+
+        input::placeholder {
+            color: #555;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #007bff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #fff;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="signup-box">
+        <h2>Job Applicant Registration</h2>
+        <form action="register" method="post">
+            <input type="hidden" name="role" value="seeker">
+
+            <input type="text" name="name" placeholder="Full Name" required>
+            <input type="email" name="email" placeholder="Email ID" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="tel" name="phone" placeholder="Phone Number" required>
+
+            <button type="submit">Create Account</button>
+            
+        </form>
+    </div>
+
+</body>
+<script>
+window.onload = function () {
+    const p = new URLSearchParams(window.location.search);
+
+    if (p.get("error") === "email_exists") {
+        alert("Email already exists. Please use another email.");
+    }
+    if (p.get("success") === "registered") {
+        alert("Registration successful! Please login.");
+    }
+};
+</script>
+
+</html>

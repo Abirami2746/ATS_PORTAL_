@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Candidate Email Templates - Recruiter Portal</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f3f4f6;
+        padding: 20px;
+    }
+    h2 {
+        text-align: center;
+        color: #111827;
+        margin-top: 0;
+    }
+    .action-list {
+        max-width: 400px;
+        margin: 20px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .action-list button {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: 0.2s;
+    }
+    .action-list button:hover {
+        background: #2563eb;
+    }
+    #emailForm {
+        display: none;
+        max-width: 400px;
+        margin: 20px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    #emailForm textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+    }
+    #emailForm button {
+        width: 48%;
+        margin: 5px 1%;
+        padding: 10px;
+        font-size: 14px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        color: white;
+    }
+    #sendBtn { background: #10b981; }
+    #sendBtn:hover { background: #059669; }
+    #cancelBtn { background: #ef4444; }
+    #cancelBtn:hover { background: #b91c1c; }
+
+    #backBtn {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 15px;
+        background: #6b7280;
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+    }
+    #backBtn:hover { background: #4b5563; }
+</style>
+</head>
+<body>
+
+<h2>Candidate Email Actions</h2>
+
+<div class="action-list">
+    <button onclick="openEmailForm('Interview Call')">Send Interview Call</button>
+    <button onclick="openEmailForm('Rejection Mail')">Send Rejection Mail</button>
+    <button onclick="openEmailForm('Shortlist Mail')">Send Shortlist Mail</button>
+    <button onclick="openEmailForm('Offer Letter')">Send Offer Letter</button>
+</div>
+
+<div id="emailForm">
+    <h3 id="emailTitle">Send Email</h3>
+    <textarea id="emailContent" rows="6" placeholder="Type email content here..."></textarea>
+    <br>
+    <button id="sendBtn" onclick="sendEmail()">Send</button>
+    <button id="cancelBtn" onclick="closeEmailForm()">Cancel</button>
+</div>
+
+<a href="Recruiterdashboard.html" id="backBtn">Back to Dashboard</a>
+
+<script>
+    let currentAction = '';
+
+    function openEmailForm(action) {
+        currentAction = action;
+        document.getElementById('emailTitle').textContent = `Send ${action}`;
+        document.getElementById('emailContent').value = '';
+        document.getElementById('emailForm').style.display = 'block';
+    }
+
+    function closeEmailForm() {
+        document.getElementById('emailForm').style.display = 'none';
+    }
+
+    function sendEmail() {
+        const content = document.getElementById('emailContent').value.trim();
+        if(!content) {
+            alert('Please enter email content.');
+            return;
+        }
+        alert(`${currentAction} sent!\n\nContent:\n${content}`);
+        closeEmailForm();
+    }
+</script>
+
+</body>
+</html>
+

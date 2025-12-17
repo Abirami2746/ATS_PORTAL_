@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Applied Jobs</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f7fafc;
+    margin: 0; padding: 0;
+}
+
+.card {
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.applied-job {
+    border: 1px solid #eef2f7;
+    padding: 14px;
+    border-radius: 10px;
+    margin-top: 12px;
+    position: relative;
+    background: #fff;
+}
+
+.delete {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    color: #dc2626;
+    font-size: 20px;
+}
+
+h2 { margin-top: 0; }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Applied Jobs</h2>
+    <div id="appliedJobs"></div>
+</div>
+
+<script>
+const APPLY_KEY = 'job_portal_applications_v1';
+
+/* ----- SAMPLE JOB DATA (must match IDs in applications) ----- */
+const jobs = [
+    {
+        id: 1,
+        title: "Frontend Engineer",
+        company: "Acme Corp",
+        address: "Hyderabad, India, Madhapur",
+        requirements: "HTML, CSS, JavaScript, React",
+        responsibilities: "Develop UI, Build components, Fix bugs"
+    },
+    {
+        id: 2,
+        title: "Backend Developer",
+        company: "TechWorks",
+        address: "Bangalore, India, Whitefield",
+        requirements: "Java, Spring Boot, REST API, MySQL",
+        responsibilities: "Develop API, Maintain server, Write documentation"
+    },
+    {
+        id: 3,
+        title: "Data Analyst",
+        company: "Insight Data",
+        address: "Pune, India, Hinjawadi",
+        requirements: "SQL, Python, PowerBI, Excel",
+        responsibilities: "Analyze data, Create reports, Support decision making"
+    }
+];
+
+/* ----- GET APPLIED JOBS ----- */
+function getApplied() {
+    return JSON.parse(localStorage.getItem(APPLY_KEY) || '[]');
+}
+
+/* ----- DELETE APPLIED JOB ----- */
+function deleteApplied(index) {
+    let apps = getApplied();
+    apps.splice(index, 1);
+    localStorage.setItem(APPLY_KEY, JSON.stringify(apps));
+    render();
+}
+
+/* ----- RENDER APPLIED JOBS ----- */
+function render() {
+    const container = document.getElementById("appliedJobs");
+    const applied = getApplied();
+
+    if (!applied.length) {
+        container.innerHTML = "<p>No applied jobs yet.</p>";
+        return;
+    }
+
+    container.innerHTML = applied.map((a, i) => {
+        let job = jobs.find(j => j.id === a.jobId);
+        if(!job) return ''; // Safety check
+        return `
+        <div class="applied-job">
+            <span class="delete" title="Delete" onclick="deleteApplied(${i})">🗑️</span>
+            <h3>${job.title} – ${job.company}</h3>
+            <p><b>Address:</b><br>${job.address.split(",").join("<br>")}</p>
+            <p><b>Requirements:</b></p>
+            <ul>${job.requirements.split(",").map(r => `<li>${r.trim()}</li>`).join("")}</ul>
+            <p><b>Responsibilities:</b></p>
+            <ul>${job.responsibilities.split(",").map(r => `<li>${r.trim()}</li>`).join("")}</ul>
+        </div>
+        `;
+    }).join("");
+}
+
+render();
+</script>
+
+</body>
+</html>

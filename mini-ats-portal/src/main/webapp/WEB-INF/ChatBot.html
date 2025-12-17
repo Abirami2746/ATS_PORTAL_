@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Chatbot Assistant</title>
+
+<style>
+body {
+    margin:0;
+    font-family: Arial;
+    background:#eef2f7;
+}
+
+.chatbox {
+    max-width: 500px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.messages {
+    height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background:#fafafa;
+}
+
+.msg {
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 80%;
+}
+
+.bot {
+    background:#e0e7ff;
+    align-self: flex-start;
+}
+
+.user {
+    background:#c7f9cc;
+    margin-left:auto;
+}
+
+.input-area {
+    margin-top: 12px;
+    display:flex;
+    gap:10px;
+}
+
+input {
+    flex:1;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #cbd5e1;
+}
+
+button {
+    padding:10px 16px;
+    border:0;
+    background:#4f46e5;
+    color:white;
+    border-radius:8px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="chatbox">
+    <h2>🤖 Smart Job Assistant</h2>
+
+    <div id="msgList" class="messages"></div>
+
+    <div class="input-area">
+        <input id="userInput" placeholder="Ask something (job, ATS, resume)...">
+        <button onclick="sendMsg()">Send</button>
+    </div>
+</div>
+
+<script>
+function botReply(text) {
+    return `<div class="msg bot">${text}</div>`;
+}
+
+function userReply(text) {
+    return `<div class="msg user">${text}</div>`;
+}
+
+function sendMsg() {
+    const inp = document.getElementById("userInput");
+    const text = inp.value.trim();
+    if (!text) return;
+
+    const msgList = document.getElementById("msgList");
+    msgList.innerHTML += userReply(text);
+
+    // Basic chatbot logic
+    let reply = "";
+
+    if (text.toLowerCase().includes("job")) {
+        reply = "You can explore recommended jobs based on your uploaded resume.";
+    }
+    else if (text.toLowerCase().includes("resume")) {
+        reply = "Try improving your resume keywords to increase ATS score.";
+    }
+    else if (text.toLowerCase().includes("ats")) {
+        reply = "ATS score compares your resume keywords with job requirements.";
+    }
+    else if (text.toLowerCase().includes("course")) {
+        reply = "Check suggested courses based on missing skills in ATS page.";
+    }
+    else {
+        reply = "I am here to help with ATS, jobs, skills and resume tips!";
+    }
+
+    msgList.innerHTML += botReply(reply);
+
+    inp.value = "";
+    msgList.scrollTop = msgList.scrollHeight;
+}
+</script>
+
+</body>
+</html>

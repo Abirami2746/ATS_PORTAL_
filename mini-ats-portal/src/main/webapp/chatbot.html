@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recruiter Chatbot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .chat-container {
+            width: 400px;
+            max-width: 90%;
+            height: 600px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 15px;
+            background: #3b82f6;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .chat-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+            background: #f9fafb;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        .chat-input button {
+            padding: 10px 15px;
+            margin-left: 10px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .user-msg {
+            align-self: flex-end;
+            background: #3b82f6;
+            color: white;
+            border-bottom-right-radius: 0;
+        }
+
+        .bot-msg {
+            align-self: flex-start;
+            background: #e5e7eb;
+            color: #111827;
+            border-bottom-left-radius: 0;
+        }
+
+        /* Scrollbar */
+        .chat-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-body::-webkit-scrollbar-thumb {
+            background: #9ca3af;
+            border-radius: 3px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-header">Recruiter Assistant 🤖</div>
+    <div class="chat-body" id="chatBody">
+        <div class="bot-msg message">Hello! How can I help you today?</div>
+    </div>
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    function sendMessage() {
+        const input = document.getElementById('userInput');
+        const chatBody = document.getElementById('chatBody');
+        const userText = input.value.trim();
+        if (userText === '') return;
+
+        // Append user message
+        const userMsg = document.createElement('div');
+        userMsg.className = 'message user-msg';
+        userMsg.textContent = userText;
+        chatBody.appendChild(userMsg);
+
+        // Clear input
+        input.value = '';
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        // Simple bot response logic
+        setTimeout(() => {
+            const botMsg = document.createElement('div');
+            botMsg.className = 'message bot-msg';
+            
+            // Example predefined responses
+            if (userText.toLowerCase().includes('post job')) {
+                botMsg.textContent = "To post a job, go to the 'Post Job' section in your dashboard.";
+            } else if (userText.toLowerCase().includes('view applicants')) {
+                botMsg.textContent = "You can view all applicants under the 'View Applicants' section.";
+            } else if (userText.toLowerCase().includes('ats score')) {
+                botMsg.textContent = "You can screen resumes using the ATS screening module.";
+            } else {
+                botMsg.textContent = "I'm here to help with posting jobs, viewing applicants, and screening resumes!";
+            }
+
+            chatBody.appendChild(botMsg);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }, 500);
+    }
+
+    // Allow enter key to send message
+    document.getElementById('userInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') sendMessage();
+    });
+</script>
+
+</body>
+</html>

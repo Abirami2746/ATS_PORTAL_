@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recruiter Login</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #43cea2, #185a9d);
+        }
+
+        .login-box {
+            width: 350px;
+            padding: 40px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h2 {
+            color: #fff;
+            font-size: 26px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 12px;
+            border: none;
+            outline: none;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #fff;
+            transition: 0.3s;
+        }
+
+        .login-btn {
+            background: #007bff;
+        }
+
+        .login-btn:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .Back-btn {
+            background: #d9534f;
+            margin-top: 12px;
+        }
+
+        .Back-btn:hover {
+            background: #c9302c;
+            transform: scale(1.05);
+        }
+
+        p {
+            margin-top: 18px;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        a {
+            color: #ffe082;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="login-box">
+        <h2>Recruiter Login</h2>
+
+        <form onsubmit="event.preventDefault(); login();">
+            <input type="email" id="email" placeholder="Enter Email" required>
+            <input type="password" id="password" placeholder="Enter Password" required>
+
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+
+        <!-- BACK BUTTON -->
+        <button class="Back-btn" onclick="goBack()">Back</button>
+
+        <p>Don't have an account? <a href="recruiterRegister.html">Sign Up</a></p>
+        <p><a href="forgot-password.html" style="color: yellow;">Forgot Password?</a></p>
+    </div>
+
+    <script>
+        function login() {
+            alert("Login successful!");
+            window.location.href = "Recruiterdashboard.html";
+        }
+
+        function goBack() {
+            window.location.href = "index.html";
+        }
+    </script>
+
+</body>
+</html>

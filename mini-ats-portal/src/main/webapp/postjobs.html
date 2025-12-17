@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Post Job - ATS Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #43cea2, #185a9d);
+        }
+
+        .form-box {
+            width: 500px;
+            padding: 40px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h2 {
+            text-align: center;
+            color: #fff;
+            font-size: 28px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 12px;
+            border: none;
+            outline: none;
+            font-size: 15px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #007bff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #fff;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+
+        a {
+            color: #ffe082;
+            font-weight: 600;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-box">
+    <h2>Post a New Job</h2>
+
+    <form action="post-job-action" method="post">
+        <input type="text" name="company" placeholder="Company Name" required>
+        <input type="text" name="title" placeholder="Job Title" required>
+        <textarea name="description" placeholder="Job Description" required></textarea>
+        <input type="text" name="location" placeholder="Location" required>
+        <input type="text" name="role" placeholder="Job Role" required>
+        <input type="text" name="qualification" placeholder="Qualification (e.g., B.Tech, MBA)" required>
+        <input type="text" name="skills" placeholder="Required Skills (Java, SQL, AWS)" required>
+        <input type="number" name="experience" placeholder="Experience (Years)" required>
+
+<form id="postJobForm">
+    <!-- all inputs -->
+    <button type="submit">Post Job</button>
+</form>
+
+<script>
+document.getElementById("postJobForm").addEventListener("submit", function(e) {
+    e.preventDefault(); // prevent page reload
+    const formData = new FormData(this);
+    const jobData = {};
+    formData.forEach((value, key) => jobData[key] = value);
+    console.log("Job Posted:", jobData);
+    alert("Job Posted Successfully!");
+    this.reset(); // optional: clear form
+});
+</script>
+
+    <a href="Recruiterdashboard.html">Back to Dashboard</a>
+</div>
+
+</body>
+</html>

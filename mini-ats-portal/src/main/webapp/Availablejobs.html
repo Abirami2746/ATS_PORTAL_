@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Available Jobs</title>
+<style>
+body { font-family: Arial; background: #f7fafc; margin:0; padding:0; }
+.card { max-width: 900px; margin: 20px auto; background: #fff; padding: 20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.job { border:1px solid #eef2f7; padding:14px; border-radius:10px; margin-top:12px; position:relative; background:#fff;}
+.btn { padding:8px 12px; border:0; border-radius:8px; background:#2563eb; color:#fff; cursor:pointer; margin-top:8px;}
+.bookmark { position:absolute; top:10px; right:10px; cursor:pointer; font-size:22px; color:#aaa; transition:0.3s;}
+.bookmark.saved { color:#fbbf24;}
+#applyBox { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; width:350px; padding:20px; border-radius:12px; box-shadow:0 5px 25px rgba(0,0,0,0.3); display:none;}
+#overlay { position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); display:none;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Available Jobs</h2>
+  <div id="jobs"></div>
+</div>
+
+<div id="overlay"></div>
+<div id="applyBox">
+  <h3>Upload Resume</h3>
+  <input type="file" id="resumeFile" accept=".pdf,.doc,.docx">
+  <button class="btn" onclick="submitResume()">Submit Application</button>
+  <button class="btn" style="background:#dc2626;margin-top:10px" onclick="closeApply()">Cancel</button>
+</div>
+
+<script>
+const SAVE_KEY  = 'job_portal_saved_jobs_v1';
+const APPLY_KEY = 'job_portal_applications_v1';
+const JOBS_KEY  = 'job_portal_jobs_v1';
+let currentApplyJobId = null;
+
+// Sample jobs
+const jobs = [
+  { id: 1, title: "Frontend Engineer", company: "Acme Corp", address: "Hyderabad, India, Madhapur", requirements: "HTML, CSS, JavaScript, React", responsibilities: "Develop UI, Build components, Fix bugs" },
+  { id: 2, title: "Backend Developer", company: "TechWorks", address: "Bangalore, India, Whitefield", requirements: "Java, Spring Boot, REST API, MySQL", responsibilities: "Develop API, Maintain server, Write documentation" },
+  { id: 3, title: "Data Analyst", company: "Insight Data", address: "Pune, India, Hinjawadi", requirements: "SQL, Python, PowerBI, Excel", responsibilities: "Analyze data, Create reports, Support decision making" }
+];
+
+// Save jobs for applied page
+localStorage.setItem(JOBS_KEY, JSON.stringify(jobs));
+
+function getSaved() { return JSON.parse(localStorage.getItem(SAVE_KEY) || '[]'); }
+
+function saveJob(id) {
+  let saved = getSaved();
+  if(saved.includes(id)) saved = saved.filter(x=>x!==id);
+  else saved.push(id);
+  localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+  render();
+}
+
+function openApply(id) {
+  currentApplyJobId = id;
+  document.getElementById("overlay").style.display = "block";
+  document.getElementById("applyBox").style.display = "block";
+}
+
+function closeApply() {
+  document.getElementById("overlay").style.display = "none";
+  document.getElementById("applyBox").style.display = "none";
+}
+
+function submitResume() {
+  let file = document.getElementById("resumeFile").files[0];
+  if(!file){ alert("Please upload your resume."); return; }
+
+  let reader = new FileReader();
+  reader.onload = function(e){
+    let resume = e.target.result;
+    let apps = JSON.parse(localStorage.getItem(APPLY_KEY) || '[]');
+    apps.push({ jobId: currentApplyJobId, resume: resume, timestamp: Date.now() });
+    localStorage.setItem(APPLY_KEY, JSON.stringify(apps));
+    closeApply();
+    alert("Application submitted successfully!");
+  };
+  reader.readAsDataURL(file);
+}
+
+function render() {
+  const saved = getSaved();
+  const container = document.getElementById("jobs");
+  container.innerHTML = jobs.map(j=>`
+    <div class="job">
+      <span class="bookmark ${saved.includes(j.id)?'saved':''}" onclick="saveJob(${j.id})">★</span>
+      <h3>${j.title} – ${j.company}</h3>
+      <p><b>Address:</b><br>${j.address.split(",").join("<br>")}</p>
+      <p><b>Requirements:</b></p>
+      <ul>${j.requirements.split(",").map(r=>`<li>${r.trim()}</li>`).join("")}</ul>
+      <p><b>Responsibilities:</b></p>
+      <ul>${j.responsibilities.split(",").map(r=>`<li>${r.trim()}</li>`).join("")}</ul>
+      <button class="btn" onclick="openApply(${j.id})">Apply</button>
+    </div>
+  `).join("");
+}
+
+render();
+</script>
+</body>
+</html>

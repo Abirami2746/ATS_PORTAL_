@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Update Profile</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    margin: 0;
+    padding: 20px;
+}
+
+.card {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="file"],
+input[type="tel"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+#preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 15px auto 5px auto;
+    border: 2px solid #ddd;
+}
+
+.remove-btn {
+    display: block;
+    margin: 0 auto 15px auto;
+    background: #dc2626;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.remove-btn:hover {
+    background: #b91c1c;
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background: #2563eb;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+<div class="card">
+    <h2>Update Profile</h2>
+
+    <!-- Profile Photo -->
+    <img id="preview" src="https://via.placeholder.com/120" alt="Profile Preview">
+
+    <!-- NEW REMOVE PHOTO BUTTON -->
+    <button class="remove-btn" onclick="removePhoto()">Remove Photo</button>
+
+    <label>Upload Photo:</label>
+    <input type="file" id="photo" accept="image/*" onchange="loadPhoto()">
+
+    <label>Full Name:</label>
+    <input type="text" id="name">
+
+    <label>Email:</label>
+    <input type="email" id="email">
+
+    <label>Phone:</label>
+    <input type="tel" id="phone">
+
+    <button class="btn" onclick="saveProfile()">Save Profile</button>
+</div>
+
+<script>
+const PROFILE_KEY = "job_portal_profile_v1";
+
+// Load existing profile
+window.onload = function() {
+    const p = JSON.parse(localStorage.getItem(PROFILE_KEY) || "null");
+    if (p) {
+        document.getElementById("name").value = p.name || "";
+        document.getElementById("email").value = p.email || "";
+        document.getElementById("phone").value = p.phone || "";
+        if (p.photo) document.getElementById("preview").src = p.photo;
+    }
+};
+
+// Show preview when uploading photo
+function loadPhoto() {
+    const file = document.getElementById("photo").files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+        document.getElementById("preview").src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+// NEW — Remove photo
+function removePhoto() {
+    document.getElementById("preview").src = "https://via.placeholder.com/120";
+
+    const p = JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}");
+    p.photo = "";  
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(p));
+
+    alert("Photo removed.");
+}
+
+// Save profile
+function saveProfile() {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const photo = document.getElementById("preview").src;
+
+    const profile = { name, email, phone, photo };
+
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    alert("Profile updated successfully!");
+}
+</script>
+
+</body>
+</html>

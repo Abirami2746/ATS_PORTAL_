@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Keyword Auto Insert Tool</title>
+<style>
+    body {
+        font-family: Arial;
+        background: #f0f2f5;
+        padding: 40px;
+    }
+    .container {
+        max-width: 800px;
+        background: white;
+        padding: 25px;
+        margin: auto;
+        border-radius: 12px;
+        box-shadow: 0 0 15px #aaa;
+    }
+    h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 25px;
+    }
+    textarea {
+        width: 100%;
+        height: 150px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        padding: 12px;
+        margin-top: 5px;
+        font-size: 15px;
+    }
+    label {
+        font-weight: bold;
+        display: block;
+        margin-top: 20px;
+    }
+    button {
+        margin-top: 20px;
+        width: 100%;
+        padding: 12px;
+        font-size: 17px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #0056b3;
+    }
+    .keywords-list {
+        margin-top: 15px;
+        padding: 10px;
+        background: #eef5ff;
+        border-left: 4px solid #3b82f6;
+        border-radius: 6px;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Keyword Auto-Insert Tool</h2>
+
+    <label>Paste Resume Text</label>
+    <textarea id="resume" placeholder="Paste the resume text here..."></textarea>
+
+    <label>Paste Job Description</label>
+    <textarea id="jobdesc" placeholder="Paste job description here..."></textarea>
+
+    <button onclick="extractKeywords()">Extract Keywords + Optimize Resume</button>
+
+    <label>Extracted Keywords</label>
+    <div id="keywords" class="keywords-list"></div>
+
+    <label>Optimized Resume Summary</label>
+    <textarea id="optimized" placeholder="Your optimized summary will appear here..."></textarea>
+</div>
+
+<script>
+function extractKeywords() {
+    let jd = document.getElementById("jobdesc").value.toLowerCase();
+
+    if (!jd.trim()) {
+        alert("Please paste a job description!");
+        return;
+    }
+
+    // Common skill keywords for extraction
+    const skillKeywords = [
+        "java", "python", "c++", "sql", "html", "css", "javascript",
+        "react", "node", "spring", "spring boot", "aws", "git", 
+        "communication", "leadership", "problem solving",
+        "machine learning", "data analysis", "mongodb",
+        "django", "flask", "docker", "kubernetes"
+    ];
+
+    // Extract matching keywords
+    let found = skillKeywords.filter(skill => jd.includes(skill));
+
+    // Display keywords
+    document.getElementById("keywords").innerHTML =
+        found.length ? found.join(", ") : "No major keywords detected.";
+
+    // Generate optimized ATS summary
+    let summary = `
+Highly motivated candidate experienced in ${found.join(", ")}.
+Skilled in applying these technologies to real-world projects and team environments.
+Possess strong communication and adaptability, aligned with the job requirements.
+    `.trim();
+
+    document.getElementById("optimized").value = summary;
+}
+</script>
+
+</body>
+</html>
