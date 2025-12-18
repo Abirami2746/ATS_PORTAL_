@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Job Match Percentage</title>
+<style>
+body { font-family: Arial; background: #f0f3ff; padding: 40px; }
+.container {
+    max-width: 700px; margin: auto; background: #fff; padding: 25px;
+    border-radius: 12px; box-shadow: 0 0 15px #999;
+}
+textarea {
+    width: 100%; height: 150px; padding: 12px; margin-top: 12px;
+    border-radius: 8px; border: 1px solid #aaa;
+}
+button {
+    width: 100%; padding: 12px; background: #ff9800; color: white;
+    border: none; border-radius: 8px; font-size: 18px; margin-top: 15px;
+    cursor: pointer;
+}
+button:hover { background: #e68900; }
+h3 { margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>Job Match Percentage</h2>
+
+<textarea id="resume" placeholder="Paste Resume Text"></textarea>
+<textarea id="jd" placeholder="Paste Job Description"></textarea>
+
+<button onclick="calc()">Calculate Match</button>
+
+<h3 id="result">Match % : </h3>
+</div>
+
+<script>
+function calc() {
+    let resume = document.getElementById("resume").value.toLowerCase();
+    let jd = document.getElementById("jd").value.toLowerCase();
+
+    const keywords = ["java","python","sql","html","css","javascript","react","aws","spring","node"];
+
+    let matches = keywords.filter(k => resume.includes(k) && jd.includes(k));
+    
+    let percentage = (matches.length / keywords.length) * 100;
+    percentage = Math.round(percentage);
+
+    document.getElementById("result").innerText = "Match % : " + percentage + "%";
+}
+</script>
+
+</body>
+</html>

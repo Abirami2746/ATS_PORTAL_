@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Saved Jobs</title>
+<style>
+body { font-family: Arial; background:#f1f5f9; padding:20px; }
+.card {
+    max-width: 900px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+}
+.job {
+    border:1px solid #e2e8f0;
+    padding:14px;
+    border-radius:10px;
+    margin-top:12px;
+}
+.btn {
+    padding:8px 12px;
+    background:#2563eb;
+    color:white;
+    border:0;
+    border-radius:8px;
+    cursor:pointer;
+}
+.remove-btn {
+    padding:8px 12px;
+    background:#ef4444;
+    color:white;
+    border:0;
+    border-radius:8px;
+    cursor:pointer;
+    margin-left:6px;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+<h2>Saved Jobs</h2>
+<div id="savedList"></div>
+</div>
+
+<script>
+const JOBS_KEY = "job_portal_jobs_v1";
+const SAVE_KEY = "job_portal_saved_jobs_v1"; // match main jobs page
+const APPLY_KEY = "job_portal_applications_v1";
+
+/* Load all jobs */
+function getJobs() {
+    try { return JSON.parse(localStorage.getItem(JOBS_KEY) || "[]"); }
+    catch (e) { return []; }
+}
+
+/* Load saved jobs */
+function getSaved() {
+    try { return JSON.parse(localStorage.getItem(SAVE_KEY) || "[]"); }
+    catch (e) { return []; }
+}
+
+/* Load applied jobs */
+function getApps() {
+    try { return JSON.parse(localStorage.getItem(APPLY_KEY) || "[]"); }
+    catch (e) { return []; }
+}
+
+function render() {
+    const jobs = getJobs();
+    const savedIds = getSaved();
+    const container = document.getElementById("savedList");
+
+    if (!savedIds.length) {
+        container.innerHTML = `<p>No saved jobs found.</p>`;
+        return;
+    }
+
+    const savedJobs = jobs.filter(j => savedIds.includes(j.id));
+
+    container.innerHTML = savedJobs.map(j => `
+        <div class="job">
+            <strong>${escapeHtml(j.title)}</strong> • ${escapeHtml(j.company)}
+            <p>${escapeHtml(j.description)}</p>
+            <button class="btn" onclick="applyJob(${j.id})">Apply</button>
+            <button class="remove-btn" onclick="removeSave(${j.id})">Remove Save</button>
+        </div>
+    `).join("");
+}
+
+function escapeHtml(s) {
+    return (s || "").replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+}
+
+/* Apply to job */
+function applyJob(id) {
+    const sess = JSON.parse(localStorage.getItem("job_portal_session") || "null");
+    if (!sess || sess.type !== "jobseeker") {
+        alert("Please login as Job Seeker to apply.");
+        return;
+    }
+
+    const apps = getApps();
+    if (apps.find(a => a.jobId === id && a.userId === sess.id)) {
+        alert("Already applied.");
+        return;
+    }
+
+    apps.push({ jobId: id, userId: sess.id, ts: Date.now() });
+    localStorage.setItem(APPLY_KEY, JSON.stringify(apps));
+    alert("Applied successfully!");
+}
+
+/* Remove a saved job */
+function removeSave(id) {
+    let saved = getSaved().filter(s => s !== id);
+    localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+    render();
+}
+
+render();
+</script>
+
+</body>
+</html>

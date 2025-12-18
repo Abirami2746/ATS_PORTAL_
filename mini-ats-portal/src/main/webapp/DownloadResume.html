@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Download Resumes - ATS</title>
+<style>
+body { font-family: Arial; background:#f3f4f6; padding:20px; }
+h2 { text-align:center; }
+table { width:100%; border-collapse:collapse; background:white; border-radius:10px; overflow:hidden; }
+th, td { padding:12px; border-bottom:1px solid #ddd; }
+th { background:#3b82f6; color:white; }
+.download-btn {
+    background:#10b981; padding:6px 12px; border-radius:6px;
+    color:white; text-decoration:none; font-weight:bold;
+}
+.saved-btn {
+    background:#6b7280; padding:8px 14px; border-radius:6px;
+    color:white; text-decoration:none; float:right;
+}
+</style>
+</head>
+<body>
+
+<h2>Download Resumes</h2>
+
+<a class="saved-btn" href="saved_resumes.html">View Saved Resumes</a>
+
+<br><br>
+
+<table>
+<thead>
+<tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Skills</th>
+    <th>Resume</th>
+</tr>
+</thead>
+<tbody id="dataBody"></tbody>
+</table>
+
+<script>
+let applicants = [
+    {id:1, name:"John Doe", email:"john@example.com", skills:"Java, SQL", resume:"resumes/john_doe.pdf"},
+    {id:2, name:"Jane Smith", email:"jane@example.com", skills:"Python, SQL", resume:"resumes/jane_smith.pdf"}
+];
+
+function saveDownloadedResume(id) {
+    let applicant = applicants.find(a => a.id === id);
+
+    let saved = JSON.parse(localStorage.getItem("downloadedResumes") || "[]");
+
+    if (!saved.some(x => x.id === id)) {
+        saved.push(applicant);
+        localStorage.setItem("downloadedResumes", JSON.stringify(saved));
+    }
+}
+
+function loadApplicants() {
+    let tbody = document.getElementById("dataBody");
+    tbody.innerHTML = applicants.map(a => `
+        <tr>
+            <td>${a.name}</td>
+            <td>${a.email}</td>
+            <td>${a.skills}</td>
+            <td>
+                <a href="${a.resume}" download class="download-btn"
+                onclick="saveDownloadedResume(${a.id})">Download</a>
+            </td>
+        </tr>
+    `).join("");
+}
+
+loadApplicants();
+</script>
+
+
+</body>
+</html>

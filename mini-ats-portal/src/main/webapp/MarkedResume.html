@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bookmarked Resumes</title>
+<style>
+body { font-family: Arial; background:#f1f5f9; padding:20px; }
+.card { max-width: 900px; margin: 20px auto; background: white; padding: 20px; border-radius: 12px; }
+.resume { border:1px solid #e2e8f0; padding:14px; border-radius:10px; margin-top:12px; display:flex; justify-content: space-between; align-items: center; }
+.resume-info { flex: 1; }
+.resume-actions { display: flex; gap: 10px; }
+.btn { padding:8px 12px; background:#2563eb; color:white; border:0; border-radius:8px; cursor:pointer; }
+.remove-btn { padding:8px 12px; background:#ef4444; color:white; border:0; border-radius:8px; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div class="card">
+<h2>Bookmarked Resumes</h2>
+<div id="bookmarkList"></div>
+</div>
+
+<script>
+const candidates = [
+    {id:1,name:"John Doe",email:"john@example.com",skills:"Java, SQL, AWS",resume:"resumes/john_doe_resume.pdf"},
+    {id:2,name:"Jane Smith",email:"jane@example.com",skills:"Python, SQL",resume:"resumes/jane_smith_resume.pdf"}
+];
+
+const BOOKMARK_KEY = "ats_portal_bookmarks_v1";
+
+function getBookmarks() {
+    return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || "[]");
+}
+
+function renderBookmarks() {
+    const bookmarks = getBookmarks();
+    const container = document.getElementById("bookmarkList");
+
+    if(!bookmarks.length){
+        container.innerHTML = "<p>No bookmarked resumes.</p>";
+        return;
+    }
+
+    const bookmarkedCandidates = candidates.filter(c => bookmarks.includes(c.id));
+
+    container.innerHTML = bookmarkedCandidates.map(c => `
+        <div class="resume">
+            <div class="resume-info">
+                <strong>${c.name}</strong><br>
+                Email: ${c.email}<br>
+                Skills: ${c.skills}
+            </div>
+            <div class="resume-actions">
+                <a href="${c.resume}" class="btn" download>Download</a>
+                <button class="remove-btn" onclick="removeBookmark(${c.id})">Remove</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function removeBookmark(id){
+    let bookmarks = getBookmarks().filter(b => b !== id);
+    localStorage.setItem(BOOKMARK_KEY, JSON.stringify(bookmarks));
+    renderBookmarks();
+}
+
+renderBookmarks();
+</script>
+
+</body>
+</html>

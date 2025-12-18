@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ATS Score Checker</title>
+
+<style>
+body { font-family: Arial; background:#f7fafc; padding:20px; }
+.container { max-width:900px; margin:auto; background:#fff; padding:20px; border-radius:10px; }
+button { padding:12px 18px; border:none; cursor:pointer; border-radius:8px; font-size:16px; }
+.blue { background:#2563eb; color:white; }
+.red { background:#dc2626; color:white; }
+.green { background:#059669; color:white; width:100%; margin-top:20px; }
+.label { margin-top:20px; font-weight:bold; }
+.score-box { margin-top:20px; padding:15px; background:#e0f2fe; border-radius:8px; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>ATS Score Checker</h2>
+
+    <!-- FILE UPLOAD ONLY -->
+    <label class="label">Upload Resume (PDF):</label>
+    <input type="file" id="resumeFile" accept=".pdf,.txt">
+
+    <label class="label">Select Job Role:</label>
+    <select id="jobRole">
+        <option>Frontend Developer</option>
+        <option>Backend Developer</option>
+        <option>Java Developer</option>
+        <option>Python Developer</option>
+    </select>
+
+    <br><br>
+    <button class="blue" onclick="computeATS()">Compute ATS Score</button>
+    <button class="red" onclick="clearSaved()">Clear Saved Data</button>
+
+    <!-- LAST SCORE DISPLAY -->
+    <div id="lastScore" class="score-box"></div>
+
+    <button class="green" onclick="viewPast()">View Past ATS Scores</button>
+
+</div>
+
+<script>
+// Load previously saved score on page load
+document.addEventListener("DOMContentLoaded", () => {
+    const last = localStorage.getItem("lastATS");
+    if (last) document.getElementById("lastScore").innerHTML = last;
+});
+
+// Compute ATS Score
+function computeATS() {
+    let file = document.getElementById("resumeFile").files[0];
+    let role = document.getElementById("jobRole").value;
+
+    if (!file) {
+        alert("Please upload your resume file!");
+        return;
+    }
+
+    // Fake ATS score generator (you can replace logic)
+    let score = Math.floor(Math.random() * 50) + 50;
+
+    let resultHTML = `
+        <b>ATS Score:</b> ${score}% <br>
+        <small>Role: ${role}</small><br>
+        <small>Time: ${new Date().toLocaleString()}</small>
+    `;
+
+    // save to localStorage
+    localStorage.setItem("lastATS", resultHTML);
+
+    // show on screen
+    document.getElementById("lastScore").innerHTML = resultHTML;
+}
+
+// Clear saved
+function clearSaved() {
+    localStorage.removeItem("lastATS");
+    document.getElementById("lastScore").innerHTML = "";
+}
+
+// Past scores — you can store history later
+function viewPast() {
+    alert("Past ATS feature coming soon");
+}
+</script>
+
+</body>
+</html>
